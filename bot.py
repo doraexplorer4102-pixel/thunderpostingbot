@@ -823,7 +823,9 @@ async def handle_message(
     context: ContextTypes.DEFAULT_TYPE,
 ):
 
-    # Security Check
+    # Security Check (ignore updates with no sender, e.g. channel posts)
+    if update.effective_user is None or update.message is None:
+        return
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text(
             "⛔ You are not authorized to use this bot."
@@ -1881,7 +1883,7 @@ async def scheduler_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     scheduled post still pending - useful to confirm the scheduler is
     alive and to sanity-check that times were stored correctly."""
 
-    if update.effective_user.id != OWNER_ID:
+    if update.effective_user is None or update.effective_user.id != OWNER_ID:
         return
 
     now_utc = datetime.now(UTC)
